@@ -80,9 +80,10 @@ func ParseNodeMetrics(input []byte) map[string]*NodeMetrics {
 }
 
 // NodeData executes the sinfo command to get data for each node
-// It returns the output of the sinfo command
+// It returns the output of the sinfo command using the echo workaround to bypass a slurm bug on
+// version 19.5.05 that removes a space between the 1st and 2nd field of the array returned in output
 func NodeData() []byte {
-	cmd := exec.Command("echo", "$(", "sinfo", "-h", "-N", "-O", "NodeList:)","$(", "sinfo", "-h", "-N", "-O","AllocMem,Memory,CPUsState,StateLong)")
+	cmd := exec.Command("echo", "$(sinfo", "-h", "-N", "-O", "NodeList:)", "$(sinfo", "-h", "-N", "-O","AllocMem,Memory,CPUsState,StateLong)")
 	out, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
